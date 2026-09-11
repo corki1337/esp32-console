@@ -7,9 +7,9 @@
 extern "C" {
 #endif
 
-void send_done(void);
+void audio_init(void);
 
-void audio_play(const int16_t *data, size_t size);
+void audio_play(const int16_t *data, size_t size, float volume);
 
 
 #ifdef __cplusplus
