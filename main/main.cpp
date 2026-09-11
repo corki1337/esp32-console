@@ -33,6 +33,7 @@ extern "C" void app_main(void)
     pwm_init();
     spi_init();
     i2s_init();
+    audio_init();
     nvs_init();
     adc_init();
 
@@ -53,7 +54,7 @@ extern "C" void app_main(void)
 
 
 
-    //soundplayer->playSound((int16_t*)powerUp, sizeof(powerUp) / 2);
+    soundplayer->playSound((int16_t*)powerUp, sizeof(powerUp));
 
 
     uint8_t input_limiter = 0;

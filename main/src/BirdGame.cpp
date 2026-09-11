@@ -189,11 +189,11 @@ void BirdGame::control_bird(GameInput input, SoundPlayer* soundplayer){
     if(bird_vel <= 0 && (input.action || input.up)){
         bird_vel = 15;
         bird_last_control_tick = 0;
-        soundplayer->playSound((int16_t*)jump, sizeof(jump) / 2);
+        soundplayer->playSoundVolume((int16_t*)jump, sizeof(jump));
     }else if(input.action || input.up){
         bird_vel += 15;
         bird_last_control_tick = 0;
-        soundplayer->playSound((int16_t*)jump, sizeof(jump) / 2);
+        soundplayer->playSoundVolume((int16_t*)jump, sizeof(jump));
     }
     
     

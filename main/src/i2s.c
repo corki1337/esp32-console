@@ -8,11 +8,6 @@
 i2s_chan_handle_t tx_handle;
 
 
-static bool IRAM_ATTR my_i2s_callback(i2s_chan_handle_t handle, i2s_event_data_t *event, void *user_ctx) {
-
-    send_done();
-    return false;
-}
 
 void i2s_init(void){
 
@@ -21,10 +16,8 @@ void i2s_init(void){
     esp_err_t ret = i2s_new_channel(&chan_cfg, &tx_handle, NULL);
     ESP_ERROR_CHECK(ret);
 
-    i2s_event_callbacks_t cbs = {
-        .on_sent = my_i2s_callback
-    };
-    i2s_channel_register_event_callback(tx_handle, &cbs, NULL);
+
+    
 
     i2s_std_config_t std_cfg = {
         .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(16000),
