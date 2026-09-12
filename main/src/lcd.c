@@ -5,6 +5,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "pwm.h"
+#include "math.h"
+#include "nvsmem.h"
 
 #define ST7735S_SLPOUT			0x11
 #define ST7735S_DISPOFF			0x28
@@ -117,7 +119,7 @@ void lcd_init(void){
 
     lcd_cmd(ST7735S_DISPON);
 
-    lcd_set_brightness(100);
+    lcd_set_brightness(((nvs_read("Settings", "brightness") > 15) ? nvs_read("Settings", "brightness"): 15)); 
 }
 
 void IRAM_ATTR lcd_copy_done(spi_transaction_t *t){
@@ -175,7 +177,8 @@ void lcd_set_brightness(uint16_t percentage){
     if(percentage > 100){
         return;
     }
-    pwm_percent_write(percentage);
+    float brightness_corected = 100.0f * pow((float)percentage / 100.0f, 2.5f);
+    pwm_percent_write((uint16_t)(brightness_corected + 0.5f));
 }
 
 

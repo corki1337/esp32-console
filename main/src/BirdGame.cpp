@@ -213,7 +213,7 @@ void BirdGame::update_bird(GameInput input, SoundPlayer* soundplayer){
     bird_posy -= bird_vel;
 }
 
-void BirdGame::check_collision(){
+void BirdGame::check_collision(SoundPlayer *soundplayer){
 
     int birdyposition = bird_posy>>SUBPIXEL_SHIFT;
 
@@ -221,6 +221,7 @@ void BirdGame::check_collision(){
         if(!pipes[i].is_passed){
             if((BIRD_XPOS + BIRD_HITBOX_XOFFSET + BIRD_HITBOX_WIDTH >= pipes[i].xpos) && (BIRD_XPOS + BIRD_HITBOX_XOFFSET <= pipes[i].xpos + PIPE_WIDTH)){
                 if((birdyposition + BIRD_HITBOX_YOFFSET <= pipes[i].ygappos) || (birdyposition + BIRD_HITBOX_YOFFSET + BIRD_HITBOX_HEIGHT >= pipes[i].ygappos + pipes[i].gapheight)){
+                    soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
                     state = GAME_OVER;
                     restart_tick = 0;
                     lose_tick=0;
@@ -265,7 +266,7 @@ ChosenGame BirdGame::update(GameInput input, SoundPlayer* soundplayer){
             update_pipes();
             update_bird(input, soundplayer);
 
-            check_collision();
+            check_collision(soundplayer);
             update_score();
             
 

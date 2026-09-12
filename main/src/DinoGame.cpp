@@ -282,7 +282,7 @@ void DinoGame::dino_control(GameInput input, SoundPlayer *soundplayer){
     if(input.action || input.up){
       dino_vel_y = 50;
       dino_is_on_ground = false;
-      //soundplayer->playSoundVolume(jump, 5310);
+      soundplayer->playSoundVolume((int16_t*)jump, sizeof(jump));
 
     }
   }else{
@@ -364,7 +364,7 @@ void DinoGame::update_cacti(){
   }
 }
 
-void DinoGame::check_collision(){
+void DinoGame::check_collision(SoundPlayer *soundplayer){
   
   int cactus1left = (cacti[0].pos_x>>SUBPIXEL_SHIFT) + cacti[0].hitbox.hitbox_offset_x;
   int cactus1right = (cacti[1].is_active) ? ((cacti[1].pos_x>>SUBPIXEL_SHIFT) + cacti[1].hitbox.hitbox_offset_x + cacti[1].hitbox.width) : ((cacti[0].pos_x>>SUBPIXEL_SHIFT) + cacti[0].hitbox.width + cacti[0].hitbox.hitbox_offset_x);
@@ -377,6 +377,7 @@ void DinoGame::check_collision(){
 
   if(((dinoright >= cactus1left) && (dinoleft <=  cactus1right))|| ((dinoright >= cactus2left) && (dinoleft <=  cactus2right))){
     if((dino_pos_y>>SUBPIXEL_SHIFT) + dino_height >= GROUND - 18){
+      soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
       state = GAME_OVER;
       if((score>>2) > highscore){
         highscore = score>>2;
@@ -402,7 +403,7 @@ ChosenGame DinoGame::update(GameInput input, SoundPlayer* soundplayer){
       update_cacti();
 
       update_dino(input, soundplayer);
-      check_collision();
+      check_collision(soundplayer);
 
       score += 1;
 

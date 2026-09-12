@@ -1,5 +1,8 @@
 #include "nvsmem.h"
 #include "esp_err.h"
+#include <string.h>
+#include "nvs_flash.h"
+#include "nvs.h"
 
 
 void nvs_init(void){
@@ -17,14 +20,21 @@ void nvs_save(const char* game_name, const char* variable_name, uint16_t variabl
     if (err != ESP_OK){
         return;
     }
-    err = nvs_set_u16(my_handle, variable_name, variable);
+
+    uint16_t current_value = UINT16_MAX;
+    nvs_get_u16(my_handle, variable_name, &current_value);
 
 
-    if (err != ESP_OK){
-        nvs_close(my_handle);
-        return;
+    if(current_value != variable){
+        err = nvs_set_u16(my_handle, variable_name, variable);
+
+
+        if (err != ESP_OK){
+            nvs_close(my_handle);
+            return;
+        }
+        nvs_commit(my_handle);
     }
-    nvs_commit(my_handle);
     nvs_close(my_handle);
 }
 

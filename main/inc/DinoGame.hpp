@@ -31,7 +31,7 @@ public:
 
 private:
 
-    void check_collision();
+    void check_collision(SoundPlayer *soundplayer);
 
     void update_grains();
 
