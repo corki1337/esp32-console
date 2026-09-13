@@ -21,6 +21,7 @@ extern "C" {
 #include "BirdGame.hpp"
 #include "Menu.hpp"
 #include "sounds.hpp"
+#include "Settings.hpp"
 
 
 static const uint8_t INPUT_LIMIT = 15;
@@ -36,6 +37,7 @@ extern "C" void app_main(void)
     audio_init();
     nvs_init();
     adc_init();
+
 
     Renderer renderer;
     renderer.init();
@@ -54,12 +56,15 @@ extern "C" void app_main(void)
 
 
 
-    soundplayer->playSound((int16_t*)powerUp, sizeof(powerUp));
+    //soundplayer->playSound((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
+
+    //vTaskDelay(pdMS_TO_TICKS(500));
+
+    //soundplayer->playSound((int16_t*)powerUp, sizeof(powerUp));
 
 
     uint8_t input_limiter = 0;
 
-    lcd_set_brightness(50);
 
 
     vTaskDelay(pdMS_TO_TICKS(200));
@@ -102,6 +107,9 @@ extern "C" void app_main(void)
                     break;
                 case ChosenGame::MENU:
                     game = new Menu();
+                    break;
+                case ChosenGame::SETTINGS:
+                    game = new Settings();
                     break;
                 default:
                     break;

@@ -46,7 +46,7 @@ private:
     void update_bird(GameInput input, SoundPlayer* soundplayer);
     void update_score();
 
-    void check_collision();
+    void check_collision(SoundPlayer *soundplayer);
 
 
 

@@ -48,9 +48,6 @@ void Menu::draw_battery_level(Renderer *renderer){
     renderer->drawRect(135, 10, battery_perc/5, 9, (battery_perc > 20) ? GREEN : RED);
 
     renderer->drawNumber(137, 11, battery_perc, BLACK);
-
-
-
 }
 
 void Menu::draw_buttons(Renderer* renderer){
@@ -67,13 +64,17 @@ void Menu::init(){
     return;
 }
 
-ChosenGame Menu::update(GameInput input, SoundPlayer* soundplayer){
-
+void Menu::update_battery(){
     if(battery_tick >=  60 * 5){
         battery_tick = 0;
         battery_voltage = adc_read() * 2;
     }
-    battery_tick++;
+    battery_tick++;    
+}
+
+ChosenGame Menu::update(GameInput input, SoundPlayer* soundplayer){
+
+    update_battery();
 
     if(input.action){
         switch(actbutton){

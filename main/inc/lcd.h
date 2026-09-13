@@ -13,6 +13,7 @@
 #define BLACK			0x0000
 #define RED		    	0x00f8
 #define GREEN			0xe007
+#define LIGHT_GREEN     0x7297
 #define BLUE			0x1f00
 #define YELLOW			0xe0ff
 #define CYAN			0xff07

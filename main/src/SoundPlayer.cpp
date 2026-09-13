@@ -1,10 +1,12 @@
 #include "SoundPlayer.hpp"
 #include "audio.h"
+#include "nvsmem.h"
 
 
 SoundPlayer::SoundPlayer(){
-    is_muted = false;
-    volume = 1.0f;
+
+    is_muted = (nvs_read("Settings", "ismuted") >= 1) ? true : false;
+    volume = (nvs_read("Settings", "volume") >= 1) ? 1.0f : nvs_read("Settings", "volume");
 }
 
 
@@ -25,4 +27,8 @@ void SoundPlayer::playSoundVolume(const int16_t *data, size_t size){
 
 
     audio_play(data, size/2, volume);
+}
+
+void SoundPlayer::setmute(bool mute){
+    is_muted = mute;
 }
