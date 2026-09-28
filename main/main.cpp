@@ -20,6 +20,7 @@ extern "C" {
 #include "DinoGame.hpp"
 #include "BirdGame.hpp"
 #include "Menu.hpp"
+#include "SnakeGame.hpp"
 #include "sounds.hpp"
 #include "Settings.hpp"
 
@@ -110,6 +111,9 @@ extern "C" void app_main(void)
                     break;
                 case ChosenGame::SETTINGS:
                     game = new Settings();
+                    break;
+                case ChosenGame::SNAKE_GAME:
+                    game = new SnakeGame();
                     break;
                 default:
                     break;
