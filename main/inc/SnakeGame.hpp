@@ -39,7 +39,7 @@ private:
 
     void add_segment();
 
-    void check_collision();
+    void check_collision(SoundPlayer *soundplayer);
 
     void draw_apple(Renderer *renderer);
 

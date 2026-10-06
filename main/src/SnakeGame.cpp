@@ -18,7 +18,6 @@ static int getRandomRange(int min, int max) {
     return min + (esp_random() % (max - min + 1));
 }
 
-
 const uint16_t* SnakeGame::get_snake_corner(int dx1, int dy1, int dx2, int dy2){
     if(dx1 + dx2 == 1){
         if(dy1 + dy2 == 1){
@@ -51,9 +50,6 @@ const uint16_t* const* SnakeGame::get_snake_sprites(uint8_t spriteid){
     return tailsprites;
 }
 
-
-
-
 SnakeGame::SnakeGame(){
     
 }
@@ -71,7 +67,6 @@ void SnakeGame::spawn_new_apple(){
         }
     }
 }
-
 
 void SnakeGame::init_snake(){
 
@@ -192,11 +187,22 @@ void SnakeGame::add_segment(){
 
 }
 
-void SnakeGame::check_collision(){
-    if(gamegrid[snake[0].xgrid + snake[0].ygrid * GRIDWIDTH] == 1){
+void SnakeGame::check_collision(SoundPlayer *soundplayer){
+    if(snake[0].xgrid < 0 || snake[0].xgrid > GRIDWIDTH - 1){
+
         state = GAME_OVER;
+        soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
+        return;
+    }else if(snake[0].ygrid < 0 || snake[0].ygrid > GRIDHEIGHT - 1){
+        state = GAME_OVER;
+        soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
+        return;
+    }else if(gamegrid[snake[0].xgrid + snake[0].ygrid * GRIDWIDTH] == 1){
+        state = GAME_OVER;
+        soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
     }else if(gamegrid[snake[0].xgrid + snake[0].ygrid * GRIDWIDTH] == 2){
         add_segment();
+
 
         spawn_new_apple();
         
@@ -206,7 +212,9 @@ void SnakeGame::check_collision(){
 
 
 void SnakeGame::init(){
+
     init_snake();
+    state = PLAYING;
     score = 0;
     gametick = 0;
 }
@@ -281,7 +289,7 @@ void SnakeGame::update_snake(GameInput input, SoundPlayer *soundplayer){
                 snake[0].xgrid--;
                 break;
         }
-        check_collision();
+        check_collision(soundplayer);
         gamegrid[snake[0].xgrid + GRIDWIDTH * snake[0].ygrid] = 1;
 
         gametick=0;
@@ -293,11 +301,25 @@ void SnakeGame::update_snake(GameInput input, SoundPlayer *soundplayer){
 ChosenGame SnakeGame::update(GameInput input, SoundPlayer *soundplayer){
 
 
+    switch(state){
 
-    update_snake(input, soundplayer);
-    
+        case PLAYING:
 
+            update_snake(input, soundplayer);
+            
+            return ChosenGame::SNAKE_GAME;
 
+        case GAME_OVER:
+            
+
+            return ChosenGame::SNAKE_GAME;
+        
+        case START:
+            
+
+            return ChosenGame::SNAKE_GAME;
+
+    }
 
 
     return ChosenGame::SNAKE_GAME;
@@ -308,11 +330,29 @@ GameState SnakeGame::get_game_state(){
 }
 
 void SnakeGame::draw(Renderer *renderer){
-    
-    renderer->drawBackground(picklebg);
 
-    draw_snake(renderer);
-    draw_apple(renderer);
+    switch(state){
+
+        case PLAYING:
+        
+            renderer->drawBackground(picklebg);
+
+            draw_snake(renderer);
+            draw_apple(renderer);
+
+            renderer->drawSprite(10, 3, 34, 7, score_text);
+            renderer->drawNumber(10 + 35, 3, (uint32_t)score, BLACK);
+
+            break;
+
+        case GAME_OVER:
+            break;
+
+        case START:
+            break;
+
+
+    }
 
     renderer->display();
 
