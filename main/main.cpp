@@ -57,7 +57,7 @@ extern "C" void app_main(void)
 
 
 
-    //soundplayer->playSound((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
+    soundplayer->playSound((int16_t*)AlienBroadcast16, sizeof(AlienBroadcast16));
 
     //vTaskDelay(pdMS_TO_TICKS(500));
 
