@@ -75,6 +75,10 @@ private:
 
     uint16_t score;
     uint16_t snakelen;
+    uint16_t highscore;
+    uint16_t lose_tick;
+    uint16_t start_tick;
+    uint16_t restart_tick;
 
     uint16_t gametick;
 

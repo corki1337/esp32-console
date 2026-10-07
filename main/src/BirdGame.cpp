@@ -240,6 +240,7 @@ void BirdGame::update_score(){
         if(!pipes[i].is_passed){
             if(BIRD_XPOS >= pipes[i].xpos + PIPE_WIDTH){
                 score++;
+                
                 pipes[i].is_passed = true;
             }
         }

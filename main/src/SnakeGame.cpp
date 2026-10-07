@@ -3,6 +3,8 @@
 #include "sprites.hpp"
 #include "sounds.hpp"
 #include "esp_random.h"
+#include "string.h"
+#include "nvsmem.h"
 
 
 static const uint16_t *headsprites[4] = {pickleheadup, pickleheadright, pickleheaddown, pickleheadleft};
@@ -51,7 +53,10 @@ const uint16_t* const* SnakeGame::get_snake_sprites(uint8_t spriteid){
 }
 
 SnakeGame::SnakeGame(){
-    
+    highscore = nvs_read("SNAKE", "HIGHSCORE");
+    if(highscore == UINT16_MAX){
+        highscore = 0;
+    }
 }
 
 void SnakeGame::spawn_new_apple(){
@@ -69,6 +74,8 @@ void SnakeGame::spawn_new_apple(){
 }
 
 void SnakeGame::init_snake(){
+
+    memset(gamegrid, 0, sizeof(gamegrid));
 
     snakelen = 3;
     for(int i = 0; i < MAX_SNAKE; i++){
@@ -191,17 +198,33 @@ void SnakeGame::check_collision(SoundPlayer *soundplayer){
     if(snake[0].xgrid < 0 || snake[0].xgrid > GRIDWIDTH - 1){
 
         state = GAME_OVER;
+        restart_tick = 0;
+        if(score > highscore){
+            highscore = score;
+            nvs_save("SNAKE", "HIGHSCORE", score);
+        }
         soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
         return;
     }else if(snake[0].ygrid < 0 || snake[0].ygrid > GRIDHEIGHT - 1){
         state = GAME_OVER;
+        restart_tick = 0;
+        if(score > highscore){
+            highscore = score;
+            nvs_save("SNAKE", "HIGHSCORE", score);
+        }
         soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
         return;
     }else if(gamegrid[snake[0].xgrid + snake[0].ygrid * GRIDWIDTH] == 1){
         state = GAME_OVER;
+        restart_tick = 0;
+        if(score > highscore){
+            highscore = score;
+            nvs_save("SNAKE", "HIGHSCORE", score);
+        }
         soundplayer->playSoundVolume((int16_t*)hitHurt_2_, sizeof(hitHurt_2_));
     }else if(gamegrid[snake[0].xgrid + snake[0].ygrid * GRIDWIDTH] == 2){
         add_segment();
+        soundplayer->playSoundVolume((int16_t*)pickupCoin, sizeof(pickupCoin));
 
 
         spawn_new_apple();
@@ -214,7 +237,7 @@ void SnakeGame::check_collision(SoundPlayer *soundplayer){
 void SnakeGame::init(){
 
     init_snake();
-    state = PLAYING;
+    state = START;
     score = 0;
     gametick = 0;
 }
@@ -310,13 +333,31 @@ ChosenGame SnakeGame::update(GameInput input, SoundPlayer *soundplayer){
             return ChosenGame::SNAKE_GAME;
 
         case GAME_OVER:
-            
-
+            lose_tick++;
+            if(restart_tick > 23){
+                if(input.action || input.up || input.left || input.right){
+                    init();
+                    state = PLAYING;
+                    return ChosenGame::SNAKE_GAME;
+                }else if(input.back){
+                    return ChosenGame::MENU;
+                }
+            }else{
+                restart_tick++;
+            }
+            if(restart_tick > 200) restart_tick = 51;
+            if(lose_tick > 100) lose_tick = 0;
             return ChosenGame::SNAKE_GAME;
-        
-        case START:
             
-
+        case START:
+            start_tick++;
+            if(input.action || input.up || input.right || input.left){
+                
+                state = PLAYING;
+            }else if(input.back){
+                return ChosenGame::MENU;
+            }
+            if(start_tick > 200) start_tick = 0;
             return ChosenGame::SNAKE_GAME;
 
     }
@@ -331,28 +372,51 @@ GameState SnakeGame::get_game_state(){
 
 void SnakeGame::draw(Renderer *renderer){
 
+    renderer->drawBackground(picklebg);
+    draw_snake(renderer);
+    renderer->drawSprite(10, 3, 34, 7, score_text);
+    renderer->drawNumber(10 + 35, 3, (uint32_t)score, BLACK);
+
     switch(state){
 
         case PLAYING:
         
-            renderer->drawBackground(picklebg);
+            
 
-            draw_snake(renderer);
+            
             draw_apple(renderer);
 
-            renderer->drawSprite(10, 3, 34, 7, score_text);
-            renderer->drawNumber(10 + 35, 3, (uint32_t)score, BLACK);
+
+
+
 
             break;
 
         case GAME_OVER:
+            renderer->drawSprite(19, 20, 122, 13, gameover);
+
+            if(lose_tick % 50 < 25){
+                renderer->drawSprite(20, 80, 119, 11, press_button);
+                renderer->drawSprite(30, 95, 99, 11, torestart);      
+            }
             break;
 
         case START:
+
+            if(start_tick % 50 < 25){
+                renderer->drawSprite(20, 80, 119, 11, press_button);
+                renderer->drawSprite(40, 95, 79, 11, tostart);  
+            }
             break;
 
 
     }
+
+
+    renderer->drawSprite(70+10, 3, 25, 7, high_text);
+    renderer->drawSprite(70+26+10, 3, 34, 7, score_text);
+    renderer->drawNumber(70+26+34+11, 3, highscore, BLACK);
+
 
     renderer->display();
 
