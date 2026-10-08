@@ -1,4 +1,4 @@
-# 🎮 Konsoluch — ESP32-S3 Retro Handheld Game Console
+# 🎮 ESP32-S3 Retro Handheld Game Console
 
 <div align="center">
 
